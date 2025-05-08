@@ -3,8 +3,12 @@ import numpy as np
 import cv2
 import os
 from PIL import Image
-from Chapter03 import *
+from datetime import datetime
+from numpy.fft import fft2, ifft2
+from Chapter09 import *
 
+
+from Chapter04 import *
 # Thêm CSS để tùy chỉnh giao diện
 st.markdown("""
 <style>
@@ -129,25 +133,13 @@ h3 {
 """, unsafe_allow_html=True)
 
 # Giao diện Streamlit
-st.title("Ứng dụng Xử lý Ảnh")
+st.title("Ứng dụng Xử lý Ảnh Nhị Phân")
 
 # Danh sách kỹ thuật xử lý
 processing_options = [
-    "Negative Image",
-    "Logarit Image",
-    "Power Image",
-    "Piecewise Linear",
-    "Histogram",
-    "Histogram Equalization",
-    "Histogram Equalization (Color)",
-    "Local Histogram",
-    "Histogram Statistics",
-    "Box Filter (Custom)",
-    "Box Filter (OpenCV)",
-    "Threshold",
-    "Median Filter",
-    "Sharpen",
-    "Gradient"
+    "Đếm Vật Thể",
+    "Trích xuất và phân tích vùng liên thông",
+    "Tìm biên ảnh"
 ]
 
 # Điều khiển trong khu vực chính
@@ -161,7 +153,7 @@ with st.container():
         # Tải ảnh mẫu hoặc ảnh chính
         sample_image_file = None
         if use_sample_image:
-            sample_image_file = st.file_uploader("Chọn ảnh mẫu", type=["png", "jpg", "jpeg", "bmp"], key="sample_uploader")
+            sample_image_file = st.file_uploader("Chọn ảnh mẫu", type=["png", "jpg", "jpeg", "bmp", "tif"], key="sample_uploader")
             if sample_image_file:
                 st.success("Đã chọn ảnh mẫu!")
             else:
@@ -169,7 +161,8 @@ with st.container():
         
         image_file = None
         if not use_sample_image:
-            image_file = st.file_uploader("Tải ảnh lên", type=["png", "jpg", "jpeg", "bmp"], key="main_uploader")
+            image_file = st.file_uploader("Tải ảnh lên", type=["png", "jpg", "jpeg", "bmp", "tif"], key="main_uploader")
+        
     st.markdown('</div>', unsafe_allow_html=True)
 
 # Xử lý và hiển thị ảnh
@@ -177,11 +170,9 @@ if image_file or sample_image_file:
     
     def process_image(image):
         image_array = np.array(image)
+        # Các hàm xử lý yêu cầu ảnh grayscale
         if len(image_array.shape) == 3:
-            if selected_option == "Histogram Equalization (Color)":
-                imgin = cv2.cvtColor(image_array, cv2.COLOR_RGB2BGR)
-            else:
-                imgin = cv2.cvtColor(image_array, cv2.COLOR_RGB2GRAY)
+            imgin = cv2.cvtColor(image_array, cv2.COLOR_RGB2GRAY)
         else:
             imgin = image_array
 
@@ -194,49 +185,39 @@ if image_file or sample_image_file:
 
         with col2:
             st.subheader("Ảnh Đã Xử Lý")
-            if selected_option == "Negative Image":
-                imgout = Negative(imgin)
-            elif selected_option == "Logarit Image":
-                imgout = Logarit(imgin)
-            elif selected_option == "Power Image":
-                imgout = Power(imgin)
-            elif selected_option == "Piecewise Linear":
-                imgout = PiecewiseLinear(imgin)
-            elif selected_option == "Histogram":
-                imgout = Histogram(imgin)
-            elif selected_option == "Histogram Equalization":
-                imgout = HistEqual(imgin)
-            elif selected_option == "Histogram Equalization (Color)":
-                imgout = HistEqualColor(imgin)
-            elif selected_option == "Local Histogram":
-                imgout = LocalHist(imgin)
-            elif selected_option == "Histogram Statistics":
-                imgout = HistStat(imgin)
-            elif selected_option == "Box Filter (Custom)":
-                imgout = MyBoxFilter(imgin)
-            elif selected_option == "Box Filter (OpenCV)":
-                imgout = BoxFilter(imgin)
-            elif selected_option == "Threshold":
-                imgout = Threshold(imgin)
-            elif selected_option == "Median Filter":
-                imgout = MedianFilter(imgin)
-            elif selected_option == "Sharpen":
-                imgout = Sharpen(imgin)
-            elif selected_option == "Gradient":
-                imgout = Gradient(imgin)
-            
-            st.image(imgout, use_container_width=True, channels="BGR" if selected_option == "Histogram Equalization (Color)" else "GRAY")
+            if selected_option == "Đếm Vật Thể":
+                text, imgout = CountRice(imgin)
+            elif selected_option ==  "Trích xuất và phân tích vùng liên thông":
+                # Bước 3: Loại nhiễu nhỏ bằng mở (Opening)
+                kernel = cv2.getStructuringElement(cv2.MORPH_RECT, (5,5))
+                opened = cv2.morphologyEx(imgin, cv2.MORPH_OPEN, kernel)
+
+                # Bước 4: Gọi hàm ConnectedComponent
+                text, imgout = ConnectedComponent(opened)
+            elif selected_option == "Tìm biên ảnh":
+                text = "Đã phát hiện biên ảnh"
+                imgout = Boundary(imgin)
+
+
+            st.write(f"Kết quả: {text}")
+            st.image(imgout, use_container_width=True, channels="GRAY")
+
+
+            # Lưu ảnh
+            if st.button("Lưu ảnh đã xử lý"):
+                os.makedirs("outputs", exist_ok=True)
+                timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
+                filename = f"outputs/{selected_option.replace(' ', '_')}_{timestamp}.png"
+                cv2.imwrite(filename, imgout)
+                st.success(f"Đã lưu ảnh tại: {filename}")
 
     # Tải ảnh
     if image_file:
         image = Image.open(image_file)
         process_image(image)
     else:
-        if sample_image_file:
-            image = Image.open(sample_image_file)
-            process_image(image)
-        else:
-            st.warning("Vui lòng tải ảnh lên hoặc chọn sử dụng ảnh mẫu!")
+        image = Image.open(sample_image_file)
+        process_image(image)
 
 else:
     st.warning("Vui lòng tải ảnh lên hoặc chọn sử dụng ảnh mẫu!")

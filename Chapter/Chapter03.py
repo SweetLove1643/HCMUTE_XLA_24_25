@@ -50,26 +50,34 @@ def PiecewiseLinear(imgin):
         for y in range(0, N):
             r = imgin[x,y]
             if r < r1:
-                s = s1/r1*r
+                s = s1 if r1 == 0 else (s1/r1)*r  # Tránh chia cho 0 khi r1 = 0
             elif r < r2:
-                s = (s2-s1)/(r2-r1)*(r-r1) + s1
+                s = (s2-s1)/(r2-r1)*(r-r1) + s1 if r2 != r1 else s1  # Tránh chia cho 0 khi r2 = r1
             else:
-                s = (L-1-s2)/(L-1-r2)*(r-r2) + s2
+                s = s2  # Gán s = s2 khi r >= r2, tránh chia cho 0
             imgout[x,y] = np.uint8(s)
     return imgout
 
 def Histogram(imgin):
     M, N = imgin.shape
-    imgout = np.zeros((M,L), np.uint8) + 255
+    if M * N == 0:
+        return np.zeros((M, L), np.uint8)
+    width = max(L, N)
+    imgout = np.zeros((M, width), np.uint8)
     h = np.zeros(L, np.int32)
     for x in range(0, M):
         for y in range(0, N):
             r = imgin[x,y]
-            h[r] = h[r]+1
-    p = h/(M*N)
-    scale = 2000
+            h[r] = h[r] + 1
+    p = h / (M * N)
+    max_h = np.max(h)
+    if max_h == 0:
+        return imgout
+    scale = (M - 1) / max_h
     for r in range(0, L):
-        cv2.line(imgout,(r,M-1),(r,M-1-int(scale*p[r])), (0,0,0))
+        height = int(scale * h[r])
+        x_pos = int(r * width / L)
+        cv2.line(imgout, (x_pos, M-1), (x_pos, M-1-height), (255, 255, 255), 1)
     return imgout
 
 def HistEqual(imgin):
@@ -152,14 +160,14 @@ def MyBoxFilter(imgin):
     M, N = imgin.shape
     imgout = np.zeros((M,N), np.uint8)
     m = 11
-    n = 11
+    n = 11      
     w = np.ones((m,n))
     w = w/(m*n)
 
     a = m // 2
     b = n // 2
     for x in range(a, M-a):
-        for y in range(b, M-b):
+        for y in range(b, N-b):
             r = 0.0
             for s in range(-a, a+1):
                 for t in range(-b, b+1):

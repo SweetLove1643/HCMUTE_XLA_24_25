@@ -87,13 +87,15 @@ def FrequencyFilter(imgin):
     imgout = imgout.astype(np.uint8)
     return imgout
 
-def CreateNotchRejectFilter():
-    P = 250
-    Q = 180
-    u1, v1 = 44, 58
-    u2, v2 = 40, 119
-    u3, v3 = 86, 59
-    u4, v4 = 82, 119
+def CreateNotchRejectFilter(P, Q):
+    # Tọa độ notch được tỷ lệ theo kích thước P, Q
+    # Giả sử kích thước gốc là P=250, Q=180
+    scale_x = P / 250
+    scale_y = Q / 180
+    u1, v1 = int(44 * scale_x), int(58 * scale_y)
+    u2, v2 = int(40 * scale_x), int(119 * scale_y)
+    u3, v3 = int(86 * scale_x), int(59 * scale_y)
+    u4, v4 = int(82 * scale_x), int(119 * scale_y)
 
     D0 = 10
     n = 2
@@ -110,7 +112,7 @@ def CreateNotchRejectFilter():
             Duv = np.sqrt((u-(P-u1))**2 + (v-(Q-v1))**2)
             if Duv > 0:
                 h = h*1.0/(1.0 + np.power(D0/Duv,2*n))
-            else:
+            else:   
                 h = h*0.0
 
             # Bộ lọc u2, v2
@@ -152,7 +154,7 @@ def CreateNotchRejectFilter():
     return H
 
 def DrawNotchRejectFilter():
-    H = CreateNotchRejectFilter()
+    H = CreateNotchRejectFilter(250, 180)
     H = H*(L-1)
     H = H.astype(np.uint8)
     return H
@@ -180,7 +182,7 @@ def RemoveMoire(imgin):
 
     # Bước 5: 
     # Tạo bộ lọc NotchReject 
-    H = CreateNotchRejectFilter()
+    H = CreateNotchRejectFilter(P, Q)
     # Bước 6:
     # G = F*H nhân từng cặp
     G = F.copy()

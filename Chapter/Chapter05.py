@@ -3,7 +3,7 @@ import numpy as np
 from numpy.fft import fft2, ifft2
 from scipy import signal  # Thay đổi cách import
 from scipy.ndimage import gaussian_filter  # Thêm import này
-# from scipy.signal import gaussian, convolve2d
+# from scipy.signal import gaussian  # Thêm import này
 
 L = 256
 #-----Function Chapter 5-----#
@@ -95,9 +95,14 @@ def DenoiseMotion(imgin):
     g = g.astype(np.uint8)
     return g
 
-def gaussian_kernel(kernel_size = 3):
-    h = gaussian(kernel_size, kernel_size / 3).reshape(kernel_size, 1)
-    h = np.dot(h, h.transpose())
+
+def gaussian_kernel(kernel_size=15, sigma=3):
+    if sigma is None:
+        sigma = kernel_size / 3
+    x = np.linspace(-(kernel_size // 2), kernel_size // 2, kernel_size)
+    h = np.exp(-(x**2) / (2 * sigma**2))
+    h /= np.sum(h)
+    h = np.outer(h, h)
     h /= np.sum(h)
     return h
 
@@ -112,6 +117,8 @@ def wiener_filter(img, kernel, K = 10):
     dummy = np.abs(ifft2(dummy))
     return np.uint8(dummy)
     
+
+
 def HistEqual(imgin):
     M, N = imgin.shape
     imgout = np.zeros((M,N), np.uint8)

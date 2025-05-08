@@ -3,8 +3,8 @@ import numpy as np
 import cv2
 import os
 from PIL import Image
-from Chapter03 import *
-
+from datetime import datetime
+from Chapter04 import *
 # Thêm CSS để tùy chỉnh giao diện
 st.markdown("""
 <style>
@@ -129,25 +129,14 @@ h3 {
 """, unsafe_allow_html=True)
 
 # Giao diện Streamlit
-st.title("Ứng dụng Xử lý Ảnh")
+st.title("Ứng dụng Xử lý Ảnh Tần Số")
 
 # Danh sách kỹ thuật xử lý
 processing_options = [
-    "Negative Image",
-    "Logarit Image",
-    "Power Image",
-    "Piecewise Linear",
-    "Histogram",
-    "Histogram Equalization",
-    "Histogram Equalization (Color)",
-    "Local Histogram",
-    "Histogram Statistics",
-    "Box Filter (Custom)",
-    "Box Filter (OpenCV)",
-    "Threshold",
-    "Median Filter",
-    "Sharpen",
-    "Gradient"
+    "Spectrum",
+    "Frequency Filter",
+    "Draw Notch Reject Filter",
+    "Remove Moire"
 ]
 
 # Điều khiển trong khu vực chính
@@ -173,62 +162,54 @@ with st.container():
     st.markdown('</div>', unsafe_allow_html=True)
 
 # Xử lý và hiển thị ảnh
-if image_file or sample_image_file:
+if image_file or sample_image_file or selected_option == "Draw Notch Reject Filter":
     
-    def process_image(image):
-        image_array = np.array(image)
-        if len(image_array.shape) == 3:
-            if selected_option == "Histogram Equalization (Color)":
-                imgin = cv2.cvtColor(image_array, cv2.COLOR_RGB2BGR)
-            else:
-                imgin = cv2.cvtColor(image_array, cv2.COLOR_RGB2GRAY)
+    def process_image(image=None):
+        if selected_option == "Draw Notch Reject Filter":
+            imgin = None  # Không cần ảnh đầu vào
         else:
-            imgin = image_array
+            image_array = np.array(image)
+            # Các hàm xử lý tần số yêu cầu ảnh grayscale
+            if len(image_array.shape) == 3:
+                imgin = cv2.cvtColor(image_array, cv2.COLOR_RGB2GRAY)
+            else:
+                imgin = image_array
 
         # Hiển thị ảnh gốc và ảnh đã xử lý
         col1, col2 = st.columns(2)
         
         with col1:
             st.subheader("Ảnh Gốc")
-            st.image(image, use_container_width=True)
+            if image:
+                st.image(image, use_container_width=True)
+            else:
+                st.write("Không có ảnh gốc (bộ lọc độc lập)")
 
         with col2:
             st.subheader("Ảnh Đã Xử Lý")
-            if selected_option == "Negative Image":
-                imgout = Negative(imgin)
-            elif selected_option == "Logarit Image":
-                imgout = Logarit(imgin)
-            elif selected_option == "Power Image":
-                imgout = Power(imgin)
-            elif selected_option == "Piecewise Linear":
-                imgout = PiecewiseLinear(imgin)
-            elif selected_option == "Histogram":
-                imgout = Histogram(imgin)
-            elif selected_option == "Histogram Equalization":
-                imgout = HistEqual(imgin)
-            elif selected_option == "Histogram Equalization (Color)":
-                imgout = HistEqualColor(imgin)
-            elif selected_option == "Local Histogram":
-                imgout = LocalHist(imgin)
-            elif selected_option == "Histogram Statistics":
-                imgout = HistStat(imgin)
-            elif selected_option == "Box Filter (Custom)":
-                imgout = MyBoxFilter(imgin)
-            elif selected_option == "Box Filter (OpenCV)":
-                imgout = BoxFilter(imgin)
-            elif selected_option == "Threshold":
-                imgout = Threshold(imgin)
-            elif selected_option == "Median Filter":
-                imgout = MedianFilter(imgin)
-            elif selected_option == "Sharpen":
-                imgout = Sharpen(imgin)
-            elif selected_option == "Gradient":
-                imgout = Gradient(imgin)
+            if selected_option == "Spectrum":
+                imgout = Spectrum(imgin)
+            elif selected_option == "Frequency Filter":
+                imgout = FrequencyFilter(imgin)
+            elif selected_option == "Draw Notch Reject Filter":
+                imgout = DrawNotchRejectFilter()
+            elif selected_option == "Remove Moire":
+                imgout = RemoveMoire(imgin)
             
-            st.image(imgout, use_container_width=True, channels="BGR" if selected_option == "Histogram Equalization (Color)" else "GRAY")
+            st.image(imgout, use_container_width=True, channels="GRAY")
+
+            # Lưu ảnh
+            if st.button("Lưu ảnh đã xử lý"):
+                os.makedirs("outputs", exist_ok=True)
+                timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
+                filename = f"outputs/{selected_option.replace(' ', '_')}_{timestamp}.png"
+                cv2.imwrite(filename, imgout)
+                st.success(f"Đã lưu ảnh tại: {filename}")
 
     # Tải ảnh
-    if image_file:
+    if selected_option == "Draw Notch Reject Filter":
+        process_image()  # Không cần ảnh đầu vào
+    elif image_file:
         image = Image.open(image_file)
         process_image(image)
     else:

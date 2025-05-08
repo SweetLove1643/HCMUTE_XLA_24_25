@@ -3,8 +3,12 @@ import numpy as np
 import cv2
 import os
 from PIL import Image
-from Chapter03 import *
+from datetime import datetime
+from numpy.fft import fft2, ifft2
+from Chapter05 import *
 
+
+from Chapter04 import *
 # Thêm CSS để tùy chỉnh giao diện
 st.markdown("""
 <style>
@@ -129,25 +133,15 @@ h3 {
 """, unsafe_allow_html=True)
 
 # Giao diện Streamlit
-st.title("Ứng dụng Xử lý Ảnh")
+st.title("Ứng dụng Xử lý Ảnh Nhiễu")
 
 # Danh sách kỹ thuật xử lý
 processing_options = [
-    "Negative Image",
-    "Logarit Image",
-    "Power Image",
-    "Piecewise Linear",
-    "Histogram",
-    "Histogram Equalization",
-    "Histogram Equalization (Color)",
-    "Local Histogram",
-    "Histogram Statistics",
-    "Box Filter (Custom)",
-    "Box Filter (OpenCV)",
-    "Threshold",
-    "Median Filter",
-    "Sharpen",
-    "Gradient"
+    "Gây nhiễu",
+    "Khôi phục ảnh",
+    "Phục hồi + Tăng cường tương phản",
+    "Lọc nhiễu",
+    "Tăng tương phản"
 ]
 
 # Điều khiển trong khu vực chính
@@ -161,7 +155,7 @@ with st.container():
         # Tải ảnh mẫu hoặc ảnh chính
         sample_image_file = None
         if use_sample_image:
-            sample_image_file = st.file_uploader("Chọn ảnh mẫu", type=["png", "jpg", "jpeg", "bmp"], key="sample_uploader")
+            sample_image_file = st.file_uploader("Chọn ảnh mẫu", type=["png", "jpg", "jpeg", "bmp", "tif"], key="sample_uploader")
             if sample_image_file:
                 st.success("Đã chọn ảnh mẫu!")
             else:
@@ -169,7 +163,8 @@ with st.container():
         
         image_file = None
         if not use_sample_image:
-            image_file = st.file_uploader("Tải ảnh lên", type=["png", "jpg", "jpeg", "bmp"], key="main_uploader")
+            image_file = st.file_uploader("Tải ảnh lên", type=["png", "jpg", "jpeg", "bmp", "tif"], key="main_uploader")
+        
     st.markdown('</div>', unsafe_allow_html=True)
 
 # Xử lý và hiển thị ảnh
@@ -177,11 +172,9 @@ if image_file or sample_image_file:
     
     def process_image(image):
         image_array = np.array(image)
+        # Các hàm xử lý yêu cầu ảnh grayscale
         if len(image_array.shape) == 3:
-            if selected_option == "Histogram Equalization (Color)":
-                imgin = cv2.cvtColor(image_array, cv2.COLOR_RGB2BGR)
-            else:
-                imgin = cv2.cvtColor(image_array, cv2.COLOR_RGB2GRAY)
+            imgin = cv2.cvtColor(image_array, cv2.COLOR_RGB2GRAY)
         else:
             imgin = image_array
 
@@ -194,49 +187,44 @@ if image_file or sample_image_file:
 
         with col2:
             st.subheader("Ảnh Đã Xử Lý")
-            if selected_option == "Negative Image":
-                imgout = Negative(imgin)
-            elif selected_option == "Logarit Image":
-                imgout = Logarit(imgin)
-            elif selected_option == "Power Image":
-                imgout = Power(imgin)
-            elif selected_option == "Piecewise Linear":
-                imgout = PiecewiseLinear(imgin)
-            elif selected_option == "Histogram":
-                imgout = Histogram(imgin)
-            elif selected_option == "Histogram Equalization":
+            if selected_option == "Khôi phục ảnh":
+                # Khôi phục ảnh
+                imgout = DenoiseMotion(imgin)
+            elif selected_option == "Phục hồi + Tăng cường tương phản":
+                # Phục hồi + Tăng cường tương phản
+                img_restore = DenoiseMotion(imgin)
+                imgout = HistEqual(img_restore)
+            elif selected_option == "Lọc nhiễu":
+                try:
+                    # Áp dụng median filter trước
+                    temp = cv2.medianBlur(imgin, 7)
+                    # Sau đó áp dụng denoise motion
+                    imgout = DenoiseMotion(temp)
+                except Exception as e:
+                    st.error(f"Lỗi khi lọc nhiễu: {str(e)}")
+
+            elif selected_option == "Tăng tương phản":
                 imgout = HistEqual(imgin)
-            elif selected_option == "Histogram Equalization (Color)":
-                imgout = HistEqualColor(imgin)
-            elif selected_option == "Local Histogram":
-                imgout = LocalHist(imgin)
-            elif selected_option == "Histogram Statistics":
-                imgout = HistStat(imgin)
-            elif selected_option == "Box Filter (Custom)":
-                imgout = MyBoxFilter(imgin)
-            elif selected_option == "Box Filter (OpenCV)":
-                imgout = BoxFilter(imgin)
-            elif selected_option == "Threshold":
-                imgout = Threshold(imgin)
-            elif selected_option == "Median Filter":
-                imgout = MedianFilter(imgin)
-            elif selected_option == "Sharpen":
-                imgout = Sharpen(imgin)
-            elif selected_option == "Gradient":
-                imgout = Gradient(imgin)
-            
-            st.image(imgout, use_container_width=True, channels="BGR" if selected_option == "Histogram Equalization (Color)" else "GRAY")
+            elif selected_option == "Gây nhiễu":
+                imgout = CreateMotionNoise(imgin)
+                    
+            st.image(imgout, use_container_width=True, channels="GRAY")
+
+            # Lưu ảnh
+            if st.button("Lưu ảnh đã xử lý"):
+                os.makedirs("outputs", exist_ok=True)
+                timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
+                filename = f"outputs/{selected_option.replace(' ', '_')}_{timestamp}.png"
+                cv2.imwrite(filename, imgout)
+                st.success(f"Đã lưu ảnh tại: {filename}")
 
     # Tải ảnh
     if image_file:
         image = Image.open(image_file)
         process_image(image)
     else:
-        if sample_image_file:
-            image = Image.open(sample_image_file)
-            process_image(image)
-        else:
-            st.warning("Vui lòng tải ảnh lên hoặc chọn sử dụng ảnh mẫu!")
+        image = Image.open(sample_image_file)
+        process_image(image)
 
 else:
     st.warning("Vui lòng tải ảnh lên hoặc chọn sử dụng ảnh mẫu!")
