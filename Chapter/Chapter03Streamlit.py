@@ -3,10 +3,10 @@ import numpy as np
 import cv2
 import os
 from PIL import Image
-from Chapter03 import *
 
 
-def Chapter3():
+
+def Chapter3StreamlitUI():
     # Thêm CSS để tùy chỉnh giao diện
     st.markdown("""
     <style>

@@ -39,7 +39,7 @@ class FaceRecognitionProcessor(VideoProcessorBase):
             raise ValueError("Failed to load Haar Cascade classifier")
 
         # Load VGG16 classifier
-        classifier_path = r"vgg_face_final.onnx"
+        classifier_path = r"FaceDetection\vgg_face_final.onnx"
         if not os.path.exists(classifier_path):
             raise FileNotFoundError(f"ONNX file not found: {classifier_path}")
         self.face_classifier = ort.InferenceSession(classifier_path)
@@ -135,7 +135,7 @@ def streamlit():
     # Giao diện Streamlit
     st.title("Face Recognition")
     processor = FaceRecognitionProcessor()
-    st.write("Ứng dụng nhận diện khuôn mặt sử dụng")
+    st.write("Ứng dụng nhận diện khuôn mặt")
 
     tab1, tab2 = st.tabs(["Nhận diện bằng ảnh", "Nhận diện bằng camera"])
     with tab1:

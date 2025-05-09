@@ -1,5 +1,5 @@
 import streamlit as st
-from FaceDetection import facedetectionstreamlit as fd
+import facedetectionstreamlit as fd
 import home
 
 
@@ -98,5 +98,4 @@ elif option == "Fruit Recognization":
     st.header("Phân tích")
     st.write("Phân tích dữ liệu sẽ được hiển thị tại đây.")
 elif option == "All Chapter":
-    st.header("Cài đặt")
-    st.write("Tùy chỉnh cài đặt của bạn tại đây.")
+    st.write("Phân tích dữ liệu sẽ được hiển thị tại đây.")
