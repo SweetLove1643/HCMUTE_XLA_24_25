@@ -38,7 +38,7 @@ if face_cascade.empty():
     raise ValueError("Failed to load Haar Cascade classifier")
 
 # 2. Load VGG16 classifier
-classifier_path = r"F:\Study\Projects\HK6\XLA\Project\FaceDetection\vgg_face_final.onnx"
+classifier_path = r"vgg_face_final.onnx"
 if not os.path.exists(classifier_path):
     raise FileNotFoundError(f"ONNX file not found: {classifier_path}")
 face_classifier = ort.InferenceSession(classifier_path)
