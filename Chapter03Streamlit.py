@@ -3,6 +3,7 @@ import numpy as np
 import cv2
 import os
 from PIL import Image
+from Chapter03 import *
 
 
 
@@ -33,20 +34,6 @@ def Chapter3StreamlitUI():
         font-size: 1.7em;
         margin-top: 20px;
         margin-bottom: 12px;
-    }
-
-    /* Tùy chỉnh selectbox */
-    .stSelectbox > div > div {
-        background-color: #333333;
-        border: 1px solid #00e676;
-        border-radius: 6px;
-        padding: 12px;
-        margin-bottom: 20px;
-        transition: all 0.3s ease;
-    }
-    .stSelectbox > div > div:hover {
-        background-color: #4a4a4a;
-        box-shadow: 0 0 10px rgba(0, 230, 118, 0.5);
     }
 
     /* Tùy chỉnh file uploader */
@@ -131,7 +118,7 @@ def Chapter3StreamlitUI():
     """, unsafe_allow_html=True)
 
     # Giao diện Streamlit
-    st.title("Ứng dụng Xử lý Ảnh")
+    st.title("Ứng dụng Xử lý Ảnh", anchor="basic_app-title")
 
     # Danh sách kỹ thuật xử lý
     processing_options = [
@@ -154,16 +141,28 @@ def Chapter3StreamlitUI():
 
     # Điều khiển trong khu vực chính
     with st.container():
-        with st.expander("Cài đặt Xử lý Ảnh"):
-            selected_option = st.selectbox("Chọn kỹ thuật xử lý", processing_options)
+        with st.expander("Cài đặt Xử lý Ảnh", expanded=True):
+            selected_option = st.selectbox(
+                "Chọn kỹ thuật xử lý",
+                processing_options,
+                key="basic_processing_selectbox"
+            )
             if selected_option:
                 st.success(f"Đã chọn kỹ thuật: {selected_option}")
-            use_sample_image = st.checkbox("Sử dụng ảnh mẫu", value=False)
+            use_sample_image = st.checkbox(
+                "Sử dụng ảnh mẫu",
+                value=False,
+                key="basic_sample_image_checkbox"
+            )
 
             # Tải ảnh mẫu hoặc ảnh chính
             sample_image_file = None
             if use_sample_image:
-                sample_image_file = st.file_uploader("Chọn ảnh mẫu", type=["png", "jpg", "jpeg", "bmp"], key="sample_uploader")
+                sample_image_file = st.file_uploader(
+                    "Chọn ảnh mẫu",
+                    type=["png", "jpg", "jpeg", "bmp"],
+                    key="basic_sample_uploader"
+                )
                 if sample_image_file:
                     st.success("Đã chọn ảnh mẫu!")
                 else:
@@ -171,8 +170,13 @@ def Chapter3StreamlitUI():
             
             image_file = None
             if not use_sample_image:
-                image_file = st.file_uploader("Tải ảnh lên", type=["png", "jpg", "jpeg", "bmp"], key="main_uploader")
-        st.markdown('</div>', unsafe_allow_html=True)
+                image_file = st.file_uploader(
+                    "Tải ảnh lên",
+                    type=["png", "jpg", "jpeg", "bmp"],
+                    key="basic_main_uploader"
+                )
+        
+        st.markdown('<div id="basic_settings-container"></div>', unsafe_allow_html=True)
 
     # Xử lý và hiển thị ảnh
     if image_file or sample_image_file:
@@ -191,11 +195,11 @@ def Chapter3StreamlitUI():
             col1, col2 = st.columns(2)
             
             with col1:
-                st.subheader("Ảnh Gốc")
-                st.image(image, use_container_width=True)
-
+                st.subheader("Ảnh Gốc", anchor="basic_original-image")
+                st.image(image, use_container_width=True, key="basic_original_image_display")
+            
             with col2:
-                st.subheader("Ảnh Đã Xử Lý")
+                st.subheader("Ảnh Đã Xử Lý", anchor="basic_processed-image")
                 if selected_option == "Negative Image":
                     imgout = Negative(imgin)
                 elif selected_option == "Logarit Image":
@@ -227,7 +231,7 @@ def Chapter3StreamlitUI():
                 elif selected_option == "Gradient":
                     imgout = Gradient(imgin)
                 
-                st.image(imgout, use_container_width=True, channels="BGR" if selected_option == "Histogram Equalization (Color)" else "GRAY")
+                st.image(imgout, use_container_width=True, channels="BGR" if selected_option == "Histogram Equalization (Color)" else "GRAY", key="basic_processed_image_display")
 
         # Tải ảnh
         if image_file:

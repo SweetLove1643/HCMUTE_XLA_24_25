@@ -1,55 +1,95 @@
 import streamlit as st
 from Chapter03Streamlit import *
+from Chapter04Streamlit import *
+from Chapter05Streamlit import *
+from Chapter09Streamlit import *
 
-# Thêm CSS để tùy chỉnh sidebar
-st.markdown("""
-<style>
-/* Tùy chỉnh sidebar */
-.sidebar .sidebar-content {
-    background-color: #2c2c2c;
-    border-right: 1px solid #00e676;
-    box-shadow: 0 0 10px rgba(0, 230, 118, 0.3);
-}
+def AllChapterUI():
+    # Thêm CSS để tùy chỉnh giao diện
+    st.markdown("""
+    <style>
+    /* Nhập phông chữ Poppins */
+    @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap');
 
-/* Tùy chỉnh tiêu đề trong sidebar */
-.sidebar .sidebar-content h3 {
-    color: #00e676;
-    font-size: 1.8em;
-    text-align: center;
-    margin: 20px 0;
-    text-shadow: 0 0 8px rgba(0, 230, 118, 0.5);
-}
 
-/* Tùy chỉnh selectbox trong sidebar */
-.sidebar .stSelectbox > div > div {
-    background-color: #333333;
-    border: 1px solid #00e676;
-    border-radius: 6px;
-    padding: 12px;
-    margin: 10px 0;
-    transition: all 0.3s ease;
-}
-.sidebar .stSelectbox > div > div:hover {
-    background-color: #4a4a4a;
-    box-shadow: 0 0 10px rgba(0, 230, 118, 0.5);
-}
+    /* Nội dung chính */
+    .main .block-container {
+        background: white;
+        border-radius: 12px;
+        padding: 40px;
+        margin: 20px;
+        box-shadow: 0 6px 20px rgba(0, 0, 0, 0.1);
+    }
 
-/* Tùy chỉnh nội dung chính */
-.main .block-container {
-    padding: 30px;
-}
+    /* Tiêu đề chính */
+    #main-header {
+        color: #F0F8FF;
+        font-size: 3.5em;
+        text-align: center;
+        margin-bottom: 30px;
+        font-weight: 700;
+        text-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    }
 
-/* Tải phông chữ Poppins */
-@import url('https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600&display=swap');
-</style>
-""", unsafe_allow_html=True)
+    /* Tabs */
+    .stTabs [role="tablist"] {
+        background: #ecf0f1;
+        border-radius: 10px;
+        padding: 10px;
+        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+        display: flex;
+        justify-content: center;
+        margin-bottom: 20px;
+    }
 
-# Thiết lập sidebar
-st.sidebar.header("Menu")
-page = st.sidebar.selectbox("Chọn trang", ["Chapter03", "Chapter04", "Chapter05", "Chapter09"])
+    .stTabs [role="tab"] {
+        background: #3498db;
+        color: white;
+        border-radius: 8px;
+        padding: 12px 24px;
+        margin: 0 5px;
+        font-weight: 500;
+        transition: all 0.3s ease;
+        cursor: pointer;
+    }
 
-# Điều hướng đến trang tương ứng
-# if page == "Chapter03":
-    
-# else:
-#     st.title("Trang Khác")
+    .stTabs [role="tab"]:hover {
+        background: #2980b9;
+        transform: translateY(-2px);
+        box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+    }
+
+    .stTabs [role="tab"][aria-selected="true"] {
+        background: #00e676;
+        color: #fff;
+        box-shadow: 0 0 12px rgba(0, 230, 118, 0.5);
+    }
+
+   
+    </style>
+    """, unsafe_allow_html=True)
+
+    # Thiết lập tiêu đề chính với id
+    st.markdown('<h1 id="main-header">All Chapter</h1>', unsafe_allow_html=True)
+
+    # Thiết lập tabs với id cho container
+    tab1, tab2, tab3, tab4 = st.tabs(["Chapter03", "Chapter04", "Chapter05", "Chapter09"])
+
+    # Nội dung các tab với id chung cho container nội dung
+    with tab1:
+        st.markdown('<div id="tab-content">', unsafe_allow_html=True)
+        Chapter3StreamlitUI()
+        st.markdown('</div>', unsafe_allow_html=True)
+    with tab2:
+        st.markdown('<div id="tab-content">', unsafe_allow_html=True)
+        Chapter4StreamlitUI()
+        st.markdown('</div>', unsafe_allow_html=True)
+    with tab3:
+        st.markdown('<div id="tab-content">', unsafe_allow_html=True)
+        Chapter5StreamlitUI()
+        st.markdown('</div>', unsafe_allow_html=True)
+    with tab4:
+        st.markdown('<div id="tab-content">', unsafe_allow_html=True)
+        Chapter9StreamlitUI()
+        st.markdown('</div>', unsafe_allow_html=True)
+
