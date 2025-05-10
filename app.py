@@ -1,6 +1,7 @@
 import streamlit as st
 import facedetectionstreamlit as fd
 import home
+import chapter
 
 
 # Thiết lập cấu hình trang
@@ -98,4 +99,4 @@ elif option == "Fruit Recognization":
     st.header("Phân tích")
     st.write("Phân tích dữ liệu sẽ được hiển thị tại đây.")
 elif option == "All Chapter":
-    st.write("Phân tích dữ liệu sẽ được hiển thị tại đây.")
+    chapter.AllChapterUI()
