@@ -2,6 +2,8 @@ import streamlit as st
 import facedetectionstreamlit as fd
 import home
 import chapter
+import SeparateBackgourd 
+import FruitRecognization
 
 
 # Thiết lập cấu hình trang
@@ -85,7 +87,7 @@ local_css()
 # Sidebar
 with st.sidebar:
     st.header("Bảng Điều Khiển")
-    option = st.selectbox("Chọn danh mục", ["Trang chủ", "Face Recognization", "Fruit Recognization", "All Chapter"])
+    option = st.selectbox("Chọn danh mục", ["Trang chủ", "Face Recognization", "Fruit Recognization", "All Chapter", "Background Removal"])
 
 # # Nội dung chính
 # st.header("Môn Xử Lí Ảnh Số - HCMUTE")
@@ -96,7 +98,8 @@ if option == "Trang chủ":
 elif option == "Face Recognization":
     fd.streamlit()
 elif option == "Fruit Recognization":
-    st.header("Phân tích")
-    st.write("Phân tích dữ liệu sẽ được hiển thị tại đây.")
+    FruitRecognization.FruitRecognization()
 elif option == "All Chapter":
     chapter.AllChapterUI()
+elif option == "Background Removal":
+    SeparateBackgourd.SepareateBackground()
