@@ -185,7 +185,7 @@ def Chapter9StreamlitUI():
             
             with col1:
                 st.subheader("Ảnh Gốc", anchor="binary_original-image")
-                st.image(image, use_container_width=True, key="binary_original_image_display")
+                st.image(image, use_container_width=True)
             
             with col2:
                 st.subheader("Ảnh Đã Xử Lý", anchor="binary_processed-image")
@@ -202,7 +202,7 @@ def Chapter9StreamlitUI():
                     imgout = Boundary(imgin)
 
                 st.write(f"Kết quả: {text}", key="binary_result_text")
-                st.image(imgout, use_container_width=True, channels="GRAY", key="binary_processed_image_display")
+                st.image(imgout, use_container_width=True, channels="GRAY")
 
                 # Lưu ảnh
                 if st.button("Lưu ảnh đã xử lý", key="binary_save_button"):

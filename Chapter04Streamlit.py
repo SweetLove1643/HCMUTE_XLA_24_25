@@ -121,9 +121,9 @@ def Chapter4StreamlitUI():
 
     # Danh sách kỹ thuật xử lý
     processing_options = [
-        "Spectrum",
-        "Frequency Filter",
-        "Draw Notch Reject Filter",
+        "Spectrum (Hiện thị phổ tần số)",
+        "Frequency Filter (Lọc trong miền tần số)",
+        "Draw Notch Reject Filter (Tạo bộ lọc chặn điểm)",
         "Remove Moire"
     ]
 
@@ -167,10 +167,10 @@ def Chapter4StreamlitUI():
         st.markdown('<div id="freq_settings-container"></div>', unsafe_allow_html=True)
 
     # Xử lý và hiển thị ảnh
-    if image_file or sample_image_file or selected_option == "Draw Notch Reject Filter":
+    if image_file or sample_image_file or selected_option == "Draw Notch Reject Filter (Tạo bộ lọc chặn điểm)":
         
         def process_image(image=None):
-            if selected_option == "Draw Notch Reject Filter":
+            if selected_option == "Draw Notch Reject Filter (Tạo bộ lọc chặn điểm)":
                 imgin = None  # Không cần ảnh đầu vào
             else:
                 image_array = np.array(image)
@@ -186,22 +186,22 @@ def Chapter4StreamlitUI():
             with col1:
                 st.subheader("Ảnh Gốc", anchor="freq_original-image")
                 if image:
-                    st.image(image, use_container_width=True, key="freq_original_image_display")
+                    st.image(image, use_container_width=True)
                 else:
                     st.write("Không có ảnh gốc (bộ lọc độc lập)", key="freq_no_image_text")
             
             with col2:
                 st.subheader("Ảnh Đã Xử Lý", anchor="freq_processed-image")
-                if selected_option == "Spectrum":
+                if selected_option == "Spectrum (Hiện thị phổ tần số)":
                     imgout = Spectrum(imgin)
-                elif selected_option == "Frequency Filter":
+                elif selected_option == "Frequency Filter (Lọc trong miền tần số)":
                     imgout = FrequencyFilter(imgin)
-                elif selected_option == "Draw Notch Reject Filter":
+                elif selected_option == "Draw Notch Reject Filter (Tạo bộ lọc chặn điểm)":
                     imgout = DrawNotchRejectFilter()
                 elif selected_option == "Remove Moire":
                     imgout = RemoveMoire(imgin)
                 
-                st.image(imgout, use_container_width=True, channels="GRAY", key="freq_processed_image_display")
+                st.image(imgout, use_container_width=True, channels="GRAY")
 
                 # Lưu ảnh
                 if st.button("Lưu ảnh đã xử lý", key="freq_save_button"):
@@ -212,7 +212,7 @@ def Chapter4StreamlitUI():
                     st.success(f"Đã lưu ảnh tại: {filename}")
 
         # Tải ảnh
-        if selected_option == "Draw Notch Reject Filter":
+        if selected_option == "Draw Notch Reject Filter (Tạo bộ lọc chặn điểm)":
             process_image()  # Không cần ảnh đầu vào
         elif image_file:
             image = Image.open(image_file)

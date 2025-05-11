@@ -87,6 +87,7 @@ def FrequencyFilter(imgin):
     imgout = imgout.astype(np.uint8)
     return imgout
 
+
 def CreateNotchRejectFilter(P, Q):
     # Tọa độ notch được tỷ lệ theo kích thước P, Q
     # Giả sử kích thước gốc là P=250, Q=180

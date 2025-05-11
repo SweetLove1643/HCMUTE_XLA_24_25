@@ -159,11 +159,11 @@ def SepareateBackground():
         return foreground
 
     # Giao diện Streamlit
-    st.title("Tách Nền Ảnh Tự Động", anchor="bgrem_app-title")
-    st.write("Tải ảnh lên để tự động tách đối tượng chính khỏi nền. Bạn có thể chọn nền trong suốt, màu đơn sắc, hoặc ảnh nền.", key="bgrem_instruction-text")
+    st.markdown("## 🖼️ Tách Nền Ảnh Tự Động", unsafe_allow_html=True)
+    st.write("✨ Tải ảnh lên để tự động tách đối tượng chính khỏi nền. Bạn có thể chọn nền trong suốt, màu đơn sắc, hoặc ảnh nền.", key="bgrem_instruction-text")
 
     # Tải ảnh chính
-    uploaded_file = st.file_uploader("Chọn ảnh chứa đối tượng", type=["jpg", "jpeg", "png"], key="bgrem_main_uploader")
+    uploaded_file = st.file_uploader("📤 Chọn ảnh chứa đối tượng", type=["jpg", "jpeg", "png"], key="bgrem_main_uploader")
 
     if uploaded_file is not None:
         # Đọc và xử lý ảnh
@@ -178,7 +178,7 @@ def SepareateBackground():
         image_np = cv2.cvtColor(image_np, cv2.COLOR_RGBA2RGB) if image_np.shape[2] == 4 else image_np
         
         # Hiển thị ảnh gốc
-        st.image(image_np, caption="Ảnh gốc", use_container_width=True)
+        st.image(image_np, caption="💾 Ảnh gốc", use_container_width=True)
         
         # Tách nền
         with st.spinner("Đang tách nền..."):
@@ -186,7 +186,7 @@ def SepareateBackground():
             result_image = Image.fromarray(result, mode='RGBA')
         
         # Hiển thị ảnh với nền trong suốt
-        st.image(result_image, caption="Ảnh với nền trong suốt", use_container_width=True)
+        st.image(result_image, caption="💾 Ảnh với nền trong suốt", use_container_width=True)
         
         # Tùy chọn tải ảnh với nền trong suốt
         buf = io.BytesIO()
@@ -245,7 +245,7 @@ def SepareateBackground():
                     result_image_bg = Image.fromarray(result_with_bg, mode='RGBA')
                 
                 # Hiển thị ảnh với nền mới
-                st.image(result_image_bg, caption="Ảnh với nền mới", use_column_width=True, key="bgrem_replaced_image")
+                st.image(result_image_bg, caption="💾 Ảnh với nền mới", use_container_width=True)
                 
                 # Tùy chọn tải ảnh
                 buf = io.BytesIO()

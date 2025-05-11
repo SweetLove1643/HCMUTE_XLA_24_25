@@ -4,6 +4,7 @@ import home
 import chapter
 import SeparateBackgourd 
 import FruitRecognization
+import VehicleRecognization
 
 
 # Thiết lập cấu hình trang
@@ -87,11 +88,14 @@ local_css()
 # Sidebar
 with st.sidebar:
     st.header("Bảng Điều Khiển")
-    option = st.selectbox("Chọn danh mục", ["Trang chủ", "Face Recognization", "Fruit Recognization", "All Chapter", "Background Removal"])
+    option = st.selectbox("Chọn danh mục", ["Trang chủ", 
+                                            "Face Recognization", 
+                                            "Fruit Recognization", 
+                                            "All Chapter", 
+                                            "Background Removal", 
+                                            "Vehicle Recognization"])
 
-# # Nội dung chính
-# st.header("Môn Xử Lí Ảnh Số - HCMUTE")
-# st.write("Ứng dụng được xây dựng để trình bày các dự án môn xử lí ảnh số!")
+
 
 if option == "Trang chủ":
     home.home()
@@ -103,3 +107,5 @@ elif option == "All Chapter":
     chapter.AllChapterUI()
 elif option == "Background Removal":
     SeparateBackgourd.SepareateBackground()
+elif option == "Vehicle Recognization":
+    VehicleRecognization.VehicleRecognization()

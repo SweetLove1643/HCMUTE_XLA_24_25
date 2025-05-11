@@ -185,7 +185,7 @@ def Chapter5StreamlitUI():
             
             with col1:
                 st.subheader("Ảnh Gốc", anchor="original-image")
-                st.image(image, use_container_width=True, key="original_image_display")
+                st.image(image, use_container_width=True)
             
             with col2:
                 st.subheader("Ảnh Đã Xử Lý", anchor="processed-image")
@@ -210,7 +210,7 @@ def Chapter5StreamlitUI():
                 elif selected_option == "Gây nhiễu":
                     imgout = CreateMotionNoise(imgin)
                         
-                st.image(imgout, use_container_width=True, channels="GRAY", key="processed_image_display")
+                st.image(imgout, use_container_width=True, channels="GRAY")
 
                 # Lưu ảnh
                 if st.button("Lưu ảnh đã xử lý", key="save_button"):

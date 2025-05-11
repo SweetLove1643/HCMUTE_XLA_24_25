@@ -133,13 +133,13 @@ def process_image(image, processor):
 
 def streamlit():
     # Giao diện Streamlit
-    st.title("Face Recognition")
+    st.title("🧠 Face Recognition")
     processor = FaceRecognitionProcessor()
-    st.write("Ứng dụng nhận diện khuôn mặt")
+    st.write("👤 Ứng dụng nhận diện khuôn mặt bằng ảnh hoặc camera")
 
-    tab1, tab2 = st.tabs(["Nhận diện bằng ảnh", "Nhận diện bằng camera"])
+    tab1, tab2 = st.tabs(["🖼️ Nhận diện bằng ảnh", "📷 Nhận diện bằng camera"])
     with tab1:
-        st.subheader("Nhận diện thông qua ảnh")
+        st.subheader("🖼️ Nhận diện thông qua ảnh")
         image_input = st.file_uploader("Tải ảnh muốn sử dụng để nhận diện", type=["jpg", "png", "tif"])
 
         if image_input:
@@ -149,11 +149,11 @@ def streamlit():
             # Xử lý hình ảnh
             result_img = process_image(image, processor)
             # Hiển thị kết quả
-            st.image(result_img, "Ảnh sau khi nhận diện")
+            st.image(result_img, "✅ Ảnh sau khi nhận diện", use_container_width=True)
 
 
     with tab2:
-        st.subheader("Nhận diện sử dụng camera")
+        st.subheader("📷 Nhận diện sử dụng camera")
         # Khởi tạo webcam stream
         webrtc_streamer(
             key="face-recognition",
@@ -162,4 +162,4 @@ def streamlit():
             async_processing=True,
         )
 
-        st.write("Nhấn 'Stop' để dừng webcam hoặc đóng ứng dụng.")
+        st.write("⏹️ Nhấn 'Stop' để dừng webcam hoặc đóng ứng dụng.")

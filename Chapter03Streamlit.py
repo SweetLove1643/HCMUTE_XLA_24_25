@@ -122,20 +122,20 @@ def Chapter3StreamlitUI():
 
     # Danh sách kỹ thuật xử lý
     processing_options = [
-        "Negative Image",
-        "Logarit Image",
-        "Power Image",
-        "Piecewise Linear",
-        "Histogram",
-        "Histogram Equalization",
-        "Histogram Equalization (Color)",
-        "Local Histogram",
-        "Histogram Statistics",
-        "Box Filter (Custom)",
+        "Negative Image (Đảo ngược cường độ ánh sáng)",
+        "Logarit Image (Tăng độ tương phản)",
+        "Power Image (Điều chỉnh độ tương phản)",
+        "Piecewise Linear (Điều chỉnh độ sáng)",
+        "Histogram (Phân tích đặc tính và độ sáng)",
+        "Histogram Equalization (Cân bằng sáng)",
+        "Histogram Equalization (Color) (Cân bằng sáng cho ảnh màu)",
+        "Local Histogram (Cân bằng sáng cục bộ)",
+        "Histogram Statistics (Thống kê đặc trưng)",
+        "Box Filter (Custom) (Lọc trung bình)",
         "Box Filter (OpenCV)",
-        "Threshold",
-        "Median Filter",
-        "Sharpen",
+        "Threshold (Phân ngưỡng)",
+        "Median Filter (Lọc trung vị)",
+        "Sharpen (Tăng nét)",
         "Gradient"
     ]
 
@@ -196,42 +196,42 @@ def Chapter3StreamlitUI():
             
             with col1:
                 st.subheader("Ảnh Gốc", anchor="basic_original-image")
-                st.image(image, use_container_width=True, key="basic_original_image_display")
+                st.image(image, use_container_width=True)
             
             with col2:
                 st.subheader("Ảnh Đã Xử Lý", anchor="basic_processed-image")
-                if selected_option == "Negative Image":
+                if selected_option == "Negative Image (Đảo ngược cường độ ánh sáng)":
                     imgout = Negative(imgin)
-                elif selected_option == "Logarit Image":
+                elif selected_option == "Logarit Image (Tăng độ tương phản)":
                     imgout = Logarit(imgin)
-                elif selected_option == "Power Image":
+                elif selected_option == "Power Image (Điều chỉnh độ tương phản)":
                     imgout = Power(imgin)
-                elif selected_option == "Piecewise Linear":
+                elif selected_option == "Piecewise Linear (Điều chỉnh độ sáng)":
                     imgout = PiecewiseLinear(imgin)
-                elif selected_option == "Histogram":
+                elif selected_option == "Histogram (Phân tích đặc tính và độ sáng)":
                     imgout = Histogram(imgin)
-                elif selected_option == "Histogram Equalization":
+                elif selected_option == "Histogram Equalization (Cân bằng sáng)":
                     imgout = HistEqual(imgin)
-                elif selected_option == "Histogram Equalization (Color)":
-                    imgout = HistEqualColor(imgin)
-                elif selected_option == "Local Histogram":
+                elif selected_option == "Histogram Equalization (Color) (Cân bằng sáng cho ảnh màu)":
+                    imgout = HistEqualColor(image_array)
+                elif selected_option == "Local Histogram (Cân bằng sáng cục bộ)":
                     imgout = LocalHist(imgin)
-                elif selected_option == "Histogram Statistics":
+                elif selected_option == "Histogram Statistics (Thống kê đặc trưng)":
                     imgout = HistStat(imgin)
-                elif selected_option == "Box Filter (Custom)":
+                elif selected_option == "Box Filter (Custom) (Lọc trung bình)":
                     imgout = MyBoxFilter(imgin)
                 elif selected_option == "Box Filter (OpenCV)":
                     imgout = BoxFilter(imgin)
-                elif selected_option == "Threshold":
+                elif selected_option == "Threshold (Phân ngưỡng)":
                     imgout = Threshold(imgin)
-                elif selected_option == "Median Filter":
+                elif selected_option == "Median Filter (Lọc trung vị)":
                     imgout = MedianFilter(imgin)
-                elif selected_option == "Sharpen":
-                    imgout = Sharpen(imgin)
+                elif selected_option == "Sharpen (Tăng nét)":
+                    imgout = Sharpen(image_array)
                 elif selected_option == "Gradient":
                     imgout = Gradient(imgin)
                 
-                st.image(imgout, use_container_width=True, channels="BGR" if selected_option == "Histogram Equalization (Color)" else "GRAY", key="basic_processed_image_display")
+                st.image(imgout, use_container_width=True, channels="BGR" if selected_option == "Histogram Equalization (Color)" else "GRAY")
 
         # Tải ảnh
         if image_file:
